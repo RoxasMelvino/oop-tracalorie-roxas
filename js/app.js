@@ -57,12 +57,21 @@ class CalorieTracker {
 
     _displayCaloriesRemaining() {
         const caloriesRemainingElem = document.getElementById('calories-remaining');
+        const progressElem = document.getElementById('calorie-progress')
         const remaining = this._calorieLimit - this._totalCalories;
 
         caloriesRemainingElem.innerHTML = remaining;
 
         if (remaining <= 0) {
-            caloriesRemainingElem
+            caloriesRemainingElem.parentElement.parentElement.classList.remove('bg-light');
+            caloriesRemainingElem.parentElement.parentElement.classList.add('bg-danger');
+            progressElem.classList.remove('bg-success');
+            progressElem.classList.add('bg-danger');
+        } else {
+            caloriesRemainingElem.parentElement.parentElement.classList.remove('bg-danger');
+            caloriesRemainingElem.parentElement.parentElement.classList.add('bg-light');
+            progressElem.classList.remove('bg-danger');
+            progressElem.classList.add('bg-sucess');
         }
     }
 

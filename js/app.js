@@ -17,12 +17,14 @@ class CalorieTracker {
     addMeal(meal) {
         this._meals.push(meal);
         this._totalCalories += meal.calories; // add calories
+        this._displayNewMeal(meal);
         this._render();
     }
 
     addWorkout(workout) {
         this._workouts.push(workout);
         this._totalCalories -= workout.calories; // subtract calories
+        this._displayNewWorkout(workout);
         this._render();
     }
 
@@ -83,6 +85,56 @@ class CalorieTracker {
         progressElem.style.width = `${width}%`
     }
 
+    
+    _displayNewMeal(meal) {
+        const mealsElem = document.getElementById('meal-items');
+        const mealElem = document.createElement('div');
+        
+        mealElem.classList.add('card', 'my-2');
+        mealElem.setAttribute('data-id', meal.id);
+        mealElem.innerHTML = `
+            <div class="card-body">
+                <div class="d-flex align-items-center justify-content-between">
+                  <h4 class="mx-1">${meal.name}</h4>
+                  <div
+                    class="fs-1 bg-primary text-white text-center rounded-2 px-2 px-sm-5"
+                  >
+                    ${meal.calories}
+                  </div>
+                  <button class="delete btn btn-danger btn-sm mx-2">
+                    <i class="fa-solid fa-xmark"></i>
+                  </button>
+                </div>
+            </div>
+        `;
+
+        mealsElem.appendChild(mealElem);        
+    }
+
+    _displayNewWorkout(workout) {
+        const workoutsElem = document.getElementById('workout-items');
+        const workoutElem = document.createElement('div');
+
+        workoutElem.classList.add('card', 'my-2');
+        workoutElem.innerHTML = `
+            <div class="card-body">
+                <div class="d-flex align-items-center justify-content-between">
+                  <h4 class="mx-1">${workout.name}</h4>
+                  <div
+                    class="fs-1 bg-secondary text-white text-center rounded-2 px-2 px-sm-5"
+                  >
+                    ${workout.calories}
+                  </div>
+                  <button class="delete btn btn-danger btn-sm mx-2">
+                    <i class="fa-solid fa-xmark"></i>
+                  </button>
+                </div>
+              </div>
+        `;
+
+        workoutsElem.appendChild(workoutElem);
+    }
+
     _render() {
         this._displayCaloriesTotal();
         this._displayCaloriesConsumed();
@@ -113,7 +165,7 @@ class App {
         this._tracker = new CalorieTracker();
 
         // event listeners //
-        document.getElementById('meal-form').addEventListener('submit', this._newItem.bind(this, 'meal'));
+        document.getElementById('meal-form').addEventListener('submit', this._newItem.bind(this, 'meal'));  
         document.getElementById('workout-form').addEventListener('submit', this._newItem.bind(this, 'workout'));
     }
 
@@ -124,7 +176,7 @@ class App {
         const name = document.getElementById(`${type}-name`);
         const calories = document.getElementById(`${type}-calories`);
 
-        // validate inputs
+        // make sure both inputs are filled in
         if (name.value === '' || calories.value === '') {
             alert('Please fill in all fields')
             return;
@@ -132,9 +184,9 @@ class App {
 
         if (type === 'meal') {
             const meal = new Meal(name.value, +calories.value) //the + sign will turn this into a number
-            this._tracker.addMeal(meal)
+            this._tracker.addMeal(meal);
         } else {
-            const workout = new Workout(name.value, +calories.value) //the + sign will turn this into a number
+            const workout = new Workout(name.value, +calories.value) 
             this._tracker.addWorkout(workout)
         }
 

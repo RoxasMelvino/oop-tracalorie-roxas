@@ -50,6 +50,14 @@ class CalorieTracker {
         }
     }
 
+    resetDay() {
+        this._totalCalories = 0; 
+        this._meals = [];
+        this._workouts = [];
+
+        this._render();
+    }
+
     // Private Methods //
     _displayCaloriesTotal() {
         const totalCaloriesElem = document.getElementById('calories-total') // this is the gain/loss card
@@ -106,7 +114,6 @@ class CalorieTracker {
 
         progressElem.style.width = `${width}%`
     }
-
     
     _displayNewMeal(meal) {
         const mealsElem = document.getElementById('meal-items');
@@ -192,6 +199,10 @@ class App {
         document.getElementById('workout-form').addEventListener('submit', this._newItem.bind(this, 'workout'));
         document.getElementById('meal-items').addEventListener('click', this._removeItem.bind(this, 'meal'));
         document.getElementById('workout-items').addEventListener('click', this._removeItem.bind(this, 'workout'));
+        document.getElementById('filter-meals').addEventListener('input', this._filterItems.bind(this, 'meal'));
+        document.getElementById('filter-workouts').addEventListener('input', this._filterItems.bind(this, 'workout'));
+        document.getElementById('reset').addEventListener('click', this._reset.bind(this));
+        document.getElementById('limit').addEventListener('submit', this._setLimit.bind(this));
     }
 
     _newItem(type, e) {
@@ -233,6 +244,32 @@ class App {
 
                 e.target.closest('.card').remove();
             }
+        }
+    }
+
+    _filterItems(type, e) {
+        const text = e.target.value.toLowerCase();
+        const items = document.querySelectorAll(`#${type}-items h4`);
+
+        items.forEach(item => {
+            const itemName = item.textContent.toLowerCase();
+            
+            if (itemName.indexOf(text) !== -1) {
+                item.closest('.card').style.display = "block";
+            } else {
+                item.closest('.card').style.display = "none";
+            }
+        })
+    }
+
+    _reset() {
+        if (confirm('Are you sure?')) {
+            this._tracker.resetDay();
+
+            document.getElementById('meal-items').innerHTML = '';
+            document.getElementById('workout-items').innerHTML = '';
+            document.getElementById('filter-meals').value = '';
+            document.getElementById('filter-workouts').value = '';
         }
     }
 }

@@ -1,6 +1,6 @@
 class CalorieTracker {
     constructor() { 
-        this._calorieLimit = 2100;
+        this._calorieLimit = 2000;
         this._totalCalories = 0; 
         this._meals = [];
         this._workouts = [];
@@ -58,6 +58,11 @@ class CalorieTracker {
         this._render();
     }
 
+    setLimit(limit) {
+        this._calorieLimit = limit;
+        this._render();
+    }
+    
     // Private Methods //
     _displayCaloriesTotal() {
         const totalCaloriesElem = document.getElementById('calories-total') // this is the gain/loss card
@@ -166,6 +171,7 @@ class CalorieTracker {
     }
 
     _render() {
+        this._displayCaloriesLimit();
         this._displayCaloriesTotal();
         this._displayCaloriesConsumed();
         this._displayCaloriesBurned();
@@ -190,6 +196,10 @@ class Workout {
     }
 }
 
+class Storage {
+    
+}
+
 class App {
     constructor() {
         this._tracker = new CalorieTracker();
@@ -202,7 +212,7 @@ class App {
         document.getElementById('filter-meals').addEventListener('input', this._filterItems.bind(this, 'meal'));
         document.getElementById('filter-workouts').addEventListener('input', this._filterItems.bind(this, 'workout'));
         document.getElementById('reset').addEventListener('click', this._reset.bind(this));
-        document.getElementById('limit').addEventListener('submit', this._setLimit.bind(this));
+        document.getElementById('limit-form').addEventListener('submit', this._setLimit.bind(this));
     }
 
     _newItem(type, e) {
@@ -271,6 +281,24 @@ class App {
             document.getElementById('filter-meals').value = '';
             document.getElementById('filter-workouts').value = '';
         }
+    }
+
+    _setLimit(e) {
+        e.preventDefault();
+        const limit = document.getElementById('limit')
+        
+        if (limit.value === '') {
+            alert('Please enter a value.');
+            return;
+        } 
+
+         // passing data in a form comes as a string; convert it into a number
+        this._tracker.setLimit(Number(limit.value));
+        limit.value = '';
+
+        const modalElem = document.getElementById('limit-modal');
+        const modal = bootstrap.Modal.getInstance(modalElem);
+        modal.hide();
     }
 }
 

@@ -1,7 +1,7 @@
 class CalorieTracker {
     constructor() { 
         this._calorieLimit = Storage.getCalorieLimit();;
-        this._totalCalories = 0; 
+        this._totalCalories = Storage.getTotalCalories(); 
         this._meals = [];
         this._workouts = [];
 
@@ -18,6 +18,8 @@ class CalorieTracker {
         this._meals.push(meal);
         this._totalCalories += meal.calories; // add calories
         this._displayNewMeal(meal);
+        Storage.setTotalCalories(this._totalCalories)
+        
         this._render();
     }
 
@@ -25,16 +27,19 @@ class CalorieTracker {
         this._workouts.push(workout);
         this._totalCalories -= workout.calories; // subtract calories
         this._displayNewWorkout(workout);
+        Storage.setTotalCalories(this._totalCalories);
+
         this._render();
     }
 
     removeMeal(id) {
         const index = this._meals.findIndex((meal) => meal.id === id);
 
-        if (index !== -1) {
+        if (index !== -1) { // make sure the item exists
             const meal = this._meals[index];
             this._totalCalories -= meal.calories;
             this._meals.splice(index, 1);
+            Storage.setTotalCalories(this._totalCalories);
             this._render();
         }
     }
@@ -46,6 +51,7 @@ class CalorieTracker {
             const workout = this._workouts[index];
             this._totalCalories += workout.calories;
             this._workouts.splice(index, 1);
+            Storage.setTotalCalories(this._totalCalories);
             this._render();
         }
     }
@@ -71,7 +77,7 @@ class CalorieTracker {
     }
 
     _displayCaloriesLimit() {
-        const calorieLimitElem = document.getElementById('calories-limit') // this is the gain/loss card
+        const calorieLimitElem = document.getElementById('calories-limit') // 
         calorieLimitElem.innerHTML = this._calorieLimit;
     }
 
@@ -79,7 +85,7 @@ class CalorieTracker {
         const caloriesConsumedElem = document.getElementById('calories-consumed');
 
         // add calories consumed from meals array
-        const consumed = this._meals.reduce((total, meal) => total + meal.calories, 0) 
+        const consumed = this._meals.reduce((total, meal) => total + meal.calories, 0) // begin with 0
 
         caloriesConsumedElem.innerHTML = consumed;
     }
@@ -212,6 +218,22 @@ class Storage {
 
     static setCalorieLimit(calorieLimit) {
         localStorage.setItem('calorieLimit', calorieLimit);
+    }
+
+    static getTotalCalories(defaultTotalCalories = 0) {
+        let totalCalories;
+
+        if (localStorage.getItem('totalCalories') === null) {
+            totalCalories = defaultTotalCalories;
+        } else {
+            totalCalories = +localStorage.getItem('totalCalories');
+        }
+
+        return totalCalories;
+    }
+
+    static setTotalCalories(totalCalories) {
+        localStorage.setItem('totalCalories', totalCalories)
     }
 }
 
